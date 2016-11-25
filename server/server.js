@@ -16,11 +16,7 @@ io.on('connection', (socket) => {
     console.log("user connected!");
 
     socket.on('createMessage', (message) => {
-        console.log('createMessage:');
-        console.log(JSON.stringify(message, undefined, 4));
-
-        console.log('Now broadcasting message!');
-        socket.emit('newMessage', {
+        io.emit('newMessage', {
             from: message.from,
             text: message.text,
             createdAt: new Date().toTimeString()
