@@ -3,7 +3,7 @@ const socketIO = require('socket.io');
 const path = require('path');
 const http = require('http');
 
-const {generateMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage} = require('./utils/message');
 
 const port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname, '/../public');
@@ -30,6 +30,11 @@ io.on('connection', (socket) => {
             statusCode: '1',
             statusText: 'Message received!'
         });
+    });
+
+    socket.on('createLocationMessage', (locationData) => {
+       io.emit('newLocationMessage',
+       generateLocationMessage(locationData.from, locationData.coords));
     });
 
     socket.on('disconnect', () => {
