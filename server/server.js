@@ -26,15 +26,12 @@ io.on('connection', (socket) => {
         console.log('ceateMessage', message);
         io.emit('newMessage',
             generateMessage(message.from, message.text));
-        callback({
-            statusCode: '1',
-            statusText: 'Message received!'
-        });
+        callback();
     });
 
     socket.on('createLocationMessage', (locationData) => {
-       io.emit('newLocationMessage',
-       generateLocationMessage(locationData.from, locationData.coords));
+        io.emit('newLocationMessage',
+            generateLocationMessage(locationData.from, locationData.coords));
     });
 
     socket.on('disconnect', () => {
