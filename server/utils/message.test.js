@@ -1,4 +1,5 @@
 const expect = require('expect');
+const moment = require('moment');
 const {generateMessage, generateLocationMessage} = require('./message');
 
 describe('generateMessage', () => {
