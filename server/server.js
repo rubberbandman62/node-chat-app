@@ -37,22 +37,29 @@ io.on('connection', (socket) => {
 
     socket.on('createMessage', (message, callback) => {
         let user = users.getUser(socket.id);
-        io.to(user.room).emit('newMessage',
-            generateMessage(user.name, message.text));
+
+        if (user && isRealString(message.text)) {
+            io.to(user.room).emit('newMessage',
+                generateMessage(user.name, message.text));
+        }
+
         callback();
     });
 
     socket.on('createLocationMessage', (locationData) => {
         let user = users.getUser(socket.id);
-        io.to(user.room).emit('newLocationMessage',
-            generateLocationMessage(user.name, locationData.coords));
+
+        if (user && locationData && locationData.coords) {
+            io.to(user.room).emit('newLocationMessage',
+                generateLocationMessage(user.name, locationData.coords));
+        }
     });
 
     socket.on('disconnect', () => {
         let user = users.removeUser(socket.id);
 
         if (user) {
-            console.log(`User ${user.name} has left room ${user.room}`)
+            console.log(`User ${user.name} has left room ${user.room}`);
             let message = generateMessage('Admin', `${user.name} has left!`);
             io.to(user.room).emit('newMessage', message);
             io.to(user.room).emit('updateUserList', users.getUserList(user.room));
