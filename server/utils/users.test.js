@@ -7,9 +7,9 @@ let users;
 describe('Users', () => {
     beforeEach(() => {
         users = new Users();
-        users.users.push(new Person(1, 'name1', 'room1'));
-        users.users.push(new Person(2, 'name2', 'room2'));
-        users.users.push(new Person(3, 'name3', 'room1'));
+        users.addUser(new Person(1, 'name1', 'room1'));
+        users.addUser(new Person(2, 'name2', 'room2'));
+        users.addUser(new Person(3, 'name3', 'room1'));
         users.nextId = 4;
     });
 
@@ -25,6 +25,8 @@ describe('Users', () => {
         expect(users.users[4].id).toBe(5);
         expect(users.users[4].name).toBe('newPerson1');
         expect(users.users[4].room).toBe('newRoom1');
+
+        expect(users.getRoomList().length).toBe(4);
 
         expect(users.nextId).toBe(6);
     });

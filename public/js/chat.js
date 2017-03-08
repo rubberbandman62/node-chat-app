@@ -1,5 +1,3 @@
-let socket = io();
-
 function scrollToBottom() {
     // selectors
     let messages = $('#messages');
@@ -17,16 +15,22 @@ function scrollToBottom() {
     }
 }
 
+let socket = io();
+
 socket.on('connect', function () {
     console.log('Connected to server!');
     let params = $.deparam(window.location.search);
 
-    socket.emit('join', params, function(err) {
+    socket.emit('join', params, function(err, user) {
         if (err) {
             alert(err);
             window.location.href = '/';
         } else {
             console.log('Room entered!');
+            if (user) {
+                $('#title_sidebar').text(user.room);
+                $('#title_main').text(user.name);
+            }
         }
     });
 });

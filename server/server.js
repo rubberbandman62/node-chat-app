@@ -18,21 +18,36 @@ let users = new Users();
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
+    socket.on('getRooms', (callback) => {
+        callback(Array.from(users.getRoomList()));
+    });
+
+    socket.on('getAllUsers', (callback) => {
+        callback(Array.from(users.getAllUserNames()));
+    });
+
     socket.on('join', (params, callback) => {
         if (!isRealString(params.name) || !isRealString(params.room)) {
             return callback('Name and room are required!');
         }
 
-        socket.join(params.room);
-        users.removeUser(socket.id);
-        users.addUser(new Person(socket.id, params.name, params.room));
+        let room = params.room.toLowerCase();
 
-        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+        socket.join(room);
+        users.removeUser(socket.id);
+
+        let user = new Person(socket.id, params.name, params.room);
+        if (!users.addUser(user)) {
+            console.log(users.names);
+            return callback('Duplicate Name!', user);
+        }
+
+        io.to(room).emit('updateUserList', users.getUserList(room));
         socket.emit('newMessage', generateMessage('Admin', `Hi ${params.name}, welcome to ChatApp in Room ${params.room}!`));
         let message = generateMessage('Admin', `${params.name} has joined!`);
-        socket.broadcast.to(params.room).emit('newMessage', message);
+        socket.broadcast.to(room).emit('newMessage', message);
 
-        callback();
+        callback(null, user);
     });
 
     socket.on('createMessage', (message, callback) => {
